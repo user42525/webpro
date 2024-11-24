@@ -1,0 +1,81 @@
+<!DOCTYPE html> 
+<html lang="ja"> 
+  <head>
+    <meta charset="UTF-8"/>
+  </head>
+  <body>
+    <h4>2次元ランダムウォーク</h4>
+    <canvas id="c1" width="800" height="800"></canvas><br>
+    移動回数：<span id="move">0</span>&emsp;原点復帰回数：<span id="cnt">0</span>&emsp;x軸復帰回数：<span id="cnt_x">0</span>&emsp;y軸復帰回数：<span id="cnt_y">0</span><br>
+    2次元ランダムウォークでは点が原点からランダムに上下左右に移動します。<br>
+    点がまた原点に戻った回数を原点復帰回数として記録します。<br>
+    点がx軸、y軸上に移動した回数をそれぞれx軸復帰回数、y軸復帰回数として記録します。<br>
+    再スタートボタンを押すと点が原点に戻りすべての記録がリセットされます。<br>
+    <script type="text/javascript">
+      var canvas = document.getElementById('c1');
+      var ctx = canvas.getContext("2d");
+      var p, tid = null;
+      var x, y, move, cnt, cnt_x, cnt_y; 
+
+      function init()
+      {
+	  x = y = 400;    // 開始座標
+	  move = cnt = cnt_x = cnt_y = 0; // 移動回数と原点復帰回数を初期化
+	  ctx.beginPath();
+	  ctx.fillStyle = 'black';
+	  ctx.fillRect(0, 0, 800, 800);  //背景を黒で描画
+	  ctx.strokeStyle = 'white';
+	  ctx.beginPath();
+	  ctx.moveTo(400,0);
+	  ctx.lineTo(400,800);
+	  ctx.moveTo(0,400);
+          ctx.lineTo(800,400);
+	  ctx.closePath();
+	  ctx.stroke();
+	  ctx.putImageData(p, x, y);
+	  update();
+      } 
+
+      function update()
+      {
+	  for(var i = 0; i < 1000; i++){
+	  var r = Math.random(); // 1回の移動で Math.random() は1回だけ使おう
+	      if(r < 0.25){
+		  x++;
+	      }else if(r < 0.5){
+		  x--;
+	      }else if(r < 0.75){
+		  y++;
+	      }else {
+		  y--;
+	      }
+ 
+	      document.getElementById("move").innerHTML = ++move;
+	      if( x == 400 && y == 400 ) { // 原点に復帰した
+		  document.getElementById("cnt").innerHTML = ++cnt;
+	      }
+	      if( y == 400 ) { // x軸上に復帰した
+                  document.getElementById("cnt_x").innerHTML = ++cnt_x;
+              }
+	      if( x == 400 ) { // y軸上に復帰した
+                  document.getElementById("cnt_y").innerHTML = ++cnt_y;
+              }
+	      r = parseInt(Math.random() * 3); //R, G, B の中で一つランダムに選択
+	      p.data[r] = Math.random() < 0.5 ? Math.max(0,p.data[r]-2) : Math.min(255,p.data[r]+2); //明るさを変化させる 
+	      ctx.putImageData(p, x, y); // 点を描画する
+	  }
+	  
+	  tid = setTimeout("update()", 50);  //50ミリ秒経過後に呼び出す
+      } 
+
+      p = ctx.createImageData(1, 1); // 点の画像を用意
+      p.data[0] = 128;     // R
+      p.data[1] = 128;   // G
+      p.data[2] = 128;     // B
+      p.data[3] = 255;   // 透明度 (255は透明にしない) 
+
+      init(); 
+</script> 
+<input type="button" value="再スタート" onClick="init()"> 
+</body> 
+</html> 
